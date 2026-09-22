@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pokédex Randomizer</title>
+
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+
+    <style>
+
+        body {
+
+            font-family: 'Poppins', sans-serif;
+
+            background: #0f1016;
+
+            min-height: 100vh;
+
+            color: #fff;
+
+        }
+
+
+        /* LOGO */
+
+        .main-logo {
+
+            max-width: 190px;
+
+            filter:
+                drop-shadow(
+                    0 4px 10px
+                    rgba(255, 203, 5, 0.4)
+                );
+
+        }
+
+
+        /* CARD */
+
+        .poke-card {
+
+            background:
+                rgba(23, 25, 35, 0.90);
+
+            backdrop-filter: blur(16px);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 20px 40px
+                rgba(0, 0, 0, 0.6);
+
+            overflow: hidden;
+
+            padding: 20px;
+
+        }
+
+
+        /* POKEMON IMAGE */
+
+        .poke-img {
+
+            max-height: 200px;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 12px 18px
+                    rgba(0,0,0,0.5)
+                );
+
+            transition:
+                transform 0.3s ease;
+
+        }
+
+
+        .poke-img:hover {
+
+            transform:
+                scale(1.08)
+                rotate(2deg);
+
+        }
+
+
+        /* RANDOM BUTTON */
+
+        .btn-random {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff416c,
+                    #ff4b2b
+                );
+
+            border: none;
+
+            color: white;
+
+            font-weight: 700;
+
+            border-radius: 30px;
+
+            padding: 12px 32px;
+
+            box-shadow:
+                0 6px 20px
+                rgba(255, 75, 43, 0.4);
+
+            transition:
+                all 0.3s ease;
+
+        }
+
+
+        .btn-random:hover {
+
+            transform:
+                translateY(-2px)
+                scale(1.03);
+
+            color: white;
+
+        }
+
+
+        /* TYPE BADGES */
+
+        .type-badge {
+
+            text-transform: capitalize;
+
+            font-size: 0.8rem;
+
+            padding: 5px 12px;
+
+            border-radius: 20px;
+
+            font-weight: 600;
+
+            display: inline-block;
+
+            margin: 3px;
+
+        }
+
+
+        /* INFO BOX */
+
+        .info-box {
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            border-radius: 14px;
+
+            padding: 10px;
+
+            height: 100%;
+
+        }
+
+
+        .info-title {
+
+            font-size: 0.7rem;
+
+            color:
+                rgba(255,255,255,0.55);
+
+            text-transform: uppercase;
+
+            font-weight: 700;
+
+        }
+
+
+        .info-value {
+
+            font-size: 0.9rem;
+
+            font-weight: 600;
+
+        }
+
+
+        /* WEAKNESSES */
+
+        .weakness {
+
+            background:
+                rgba(255,65,108,0.15);
+
+            border:
+                1px solid
+                rgba(255,65,108,0.3);
+
+            color: #ff7b96;
+
+            padding: 5px 9px;
+
+            border-radius: 10px;
+
+            font-size: 0.72rem;
+
+            display: inline-block;
+
+            margin: 2px;
+
+        }
+
+
+        /* COUNTERS */
+
+        .counter {
+
+            background:
+                rgba(52,211,153,0.12);
+
+            border:
+                1px solid
+                rgba(52,211,153,0.3);
+
+            color: #6ee7b7;
+
+            padding: 5px 9px;
+
+            border-radius: 10px;
+
+            font-size: 0.72rem;
+
+            display: inline-block;
+
+            margin: 2px;
+
+        }
+
+
+        /* SECTION TITLES */
+
+        .section-title {
+
+            font-size: 0.85rem;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        /* STATS */
+
+        .progress {
+
+            height: 8px;
+
+            background-color:
+                rgba(255,255,255,0.08);
+
+            border-radius: 10px;
+
+        }
+
+
+        .stat-row {
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .stat-label {
+
+            width: 75px;
+
+            font-weight: 600;
+
+            font-size: 0.8rem;
+
+        }
+
+
+        /* RARITY */
+
+        .rarity {
+
+            padding: 4px 10px;
+
+            border-radius: 12px;
+
+            font-size: 0.72rem;
+
+            font-weight: 700;
+
+        }
+
+
+        /* MAP */
+
+        #mapa {
+
+            height: 300px;
+
+            width: 100%;
+
+            border-radius: 18px;
+
+            margin-top: 15px;
+
+            overflow: hidden;
+
+        }
+
+
+        .map-title {
+
+            font-size: 0.85rem;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+            text-align: left;
+
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 576px) {
+
+            .main-logo {
+
+                max-width: 175px;
+
+            }
+
+            .poke-img {
+
+                max-height: 170px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body
+    class="d-flex align-items-center justify-content-center py-5"
+>
+
+
+    <div
+        class="container text-center"
+        style="max-width: 550px;"
+    >
+
+
+        <!-- LOGO -->
+
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pokemon_logo.svg"
+            alt="Pokémon"
+            class="main-logo mb-2"
+        >
+
+
+        <h2 class="h5 text-white-50 mb-4">
+
+            Pokédex Randomizer
+
+        </h2>
+
+
+        <!-- RANDOM BUTTON -->
+
+        <button
+            id="botonPokemon"
+            class="btn btn-random mb-4"
+        >
+
+            🎲 ¡Generar Pokémon!
+
+        </button>
+
+
+        <!-- RESULTADO -->
+
+        <div id="resultado"></div>
+
+
+    </div>
+
+
+    <!-- Leaflet JS -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- TU JAVASCRIPT -->
+
+    <script src="pokemon.js"></script>
+
+
+</body>
+
+</html>
